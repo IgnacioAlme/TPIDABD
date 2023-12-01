@@ -5,6 +5,18 @@
 
 
 {% block content %}
-<!-- Escribir lo que iría en el main de la página -->
+
+<h2>Hacer reservación para el viaje</h2>
+<p>ID del servicio: {{data.id}} </p>
+<p>Desde: </p>
+<p>Hasta: </p>
+<p>Fecha de salida: </p>
+<form method="POST" novalidate>
+	{% csrf_token %}
+	{{ form.as_p }}		
+	<input type="submit" value="Reservar" />
+</form>
+<br>
+<a href={% url 'home' %}> Volver a la página principal</a> 
 
 {% endblock  %}

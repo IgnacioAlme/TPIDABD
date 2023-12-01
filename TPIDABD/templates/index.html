@@ -5,6 +5,7 @@
 
 
 {% block content %}
-<!-- Escribir lo que iría en el main de la página -->
-
+<h1>ViajaPlus - Página principal</h1>
+<a href={% url 'buscar_servicio' 'servicios' %}> Ver todos los servicios disponibles</a> <br>
+<a href={% url 'buscar_servicio' 'unidades' %}> Ver todas las unidades</a> <br>
 {% endblock  %}
