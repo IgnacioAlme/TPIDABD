@@ -1,0 +1,43 @@
+{% load static %}
+
+{% block titulo %}- Sign in{% endblock %}
+
+{% block load_scr %}
+<link href={% static 'css/signin.css' %} rel="stylesheet">
+{% endblock  %}
+
+{% block content %}
+<div class="text-center">
+<main class="form-signin card" style="opacity: 0.97;">
+
+<!--Si hay mensajes o errores-->
+{% include 'partials/_msgalert.html' %}
+  <form method="POST" action="{% url 'login' %}">
+  {% csrf_token %}
+    <img class="mb-2" src={% static 'img/logo_img.png' %} alt="" width="115" height="115">
+    <h1 class="h3 mb-3 fw-normal">Iniciar sesion</h1>
+
+    <div class="form-floating">
+      <input type="text" class="form-control" id="floatingInput" name="username" value="{{post.username}}" placeholder="Username" required>
+      <label for="floatingInput">Nombre de usuario</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password" required>
+      <label for="floatingPassword">Contraseña</label>
+    </div>
+    <input type="hidden" name="next" value="{{ request.GET.next }}"/>
+    <button class="w-100 btn btn-lg btn-primary" type="submit">Acceder</button>    
+    <div class="checkbox mb-3 py-2">
+      <label>
+        <input type="checkbox" name="remember-me" value=True> Recuérdame
+      </label>
+    </div>
+  </form>
+  <hr>
+  <p>¿No tienes una cuenta? <a class="text-dark" href={% url 'register' %}> Registrarse! </a></p>
+  </div>
+</main>
+{% endblock content %}
+
+  </body>
+</html>
