@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}- Hacer reservación{% endblock  %}
+
+
+{% block content %}
+
+<h2>Hacer reservación para el viaje</h2>
+<p>ID del servicio: {{data}} </p>
+<p>Desde: {{place_from}}</p>
+<p>Fecha partida: {{date_from|date:"d-m-Y H:i"}}</p>
+<p>Hasta: {{place_to}}</p>
+<p>Fecha llegada: {{date_to|date:"d-m-Y H:i"}}</p>
+<form method="POST" novalidate>
+	{% csrf_token %}
+	{{ form.as_p }}		
+	<input type="submit" value="Reservar" />
+</form>
+<br>
+<a href={% url 'home' %}> Volver a la página principal</a> 
+
+{% endblock  %}

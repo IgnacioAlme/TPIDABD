@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}- Página principal{% endblock  %}
+
+
+{% block content %}
+<h1>ViajaPlus - Página principal</h1>
+<a href={% url 'buscar_servicio' 'servicios' %}> Ver todos los servicios disponibles</a> <br>
+<a href={% url 'buscador_servicio' %}> Buscar un servicio</a> <br>
+<a href={% url 'buscar_servicio' 'unidades' %}> Ver todas las unidades</a> <br>
+{% endblock  %}

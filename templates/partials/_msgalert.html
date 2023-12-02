@@ -1,0 +1,9 @@
+{% if messages %}
+{% for msg in messages %}
+<div class="card border-danger mb-3" width="115">
+  <div class="card-body text-danger">
+      {{msg}}
+  </div>
+</div>
+{% endfor %}
+{% endif %}
