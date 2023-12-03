@@ -1,5 +1,5 @@
 from django import forms
-from .models import UnidadTransporte, AsientoReservado, Disposicion
+from .models import *
 
 Opciones_Atencion = (
     ("Común", "Común"),
@@ -14,12 +14,19 @@ Opciones_Estado = (
 #Campos requeridos por el formulario html para realizar una reservación
 class HacerReservacion(forms.Form):
     email_usuario = forms.CharField(required=True)
+    descuento = forms.ChoiceField(widget=forms.RadioSelect, choices=((0.1, "10%"),(0.25,"25%"),(0.5,"50%")))
 
 #Campos para definir el estado de una unidad de transporte
 class MantenimientoUnidadForm(forms.ModelForm):
     class Meta:
         model = UnidadTransporte
         fields = ("cant_pisos","categoria","patente","disponibilidad")
+
+#Campos para definir el servicio
+class AdministrarServicioForm(forms.ModelForm):
+    class Meta:
+        model = Servicio
+        fields = ("atencion","fecha_partida","fecha_llegada","disponibilidad","diferencial_precio","creador","id_itinerario","id_unidad")
 
 #Para busqueda de servicios
 class BuscadorServicio(forms.Form):

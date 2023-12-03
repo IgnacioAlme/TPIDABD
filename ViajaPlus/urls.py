@@ -7,5 +7,7 @@ urlpatterns = [
     path('ver/<str:operation>/<str:info>', views.buscar_info, name='buscar_servicio'),
     path('reservation/<str:id>/<str:tramo>', views.reserva_pasajes, name='hacer_reserva'),
     path('unit-status/<str:id>', views.mantenimiento_unidades, name='mantenimiento_unidades'),
+    path('admin-services/', views.admin_servicio, name='administrar_servicio'),
+    path('admin-services/<str:id>', views.admin_servicio, name='administrar_servicio'),
     path('statistics/', views.ver_estadisticas, name='ver_estadisticas')
 ]

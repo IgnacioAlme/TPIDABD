@@ -10,6 +10,7 @@ from .forms import *
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
+from django.db.models import Count
 from django.http.response import Http404, HttpResponseRedirect
 from datetime import datetime, date
 from urllib.parse import unquote
@@ -110,12 +111,12 @@ def reserva_pasajes(request, id, tramo):
         parada_2 = paradas.get(nro_parada=tramo[1])
 
     #Llamar la funcion del postgresql para obtener un asiento disponible
-    # id_asiento_disponible = invocar_funcion_postgresql(
-    #     'get_asientos_disponibles_funciona_de_verdad',
-    #     id,
-    #     parada_1.nro_parada,
-    #     parada_2.nro_parada
-    # )[0][0]
+    id_asiento_disponible = invocar_funcion_postgresql(
+        'get_asientos_disponibles_funciona_de_verdad',
+        id,
+        parada_1.nro_parada,
+        parada_2.nro_parada
+    )[0][0]
 
     #Y sus tiempos
     t_origen = parada_1.tiempo_llegada
@@ -233,7 +234,7 @@ def mantenimiento_unidades(request, id):
     info_unidad = UnidadTransporte.objects.get(pk=int(id))
 
     if request.method == 'GET':
-        context = {'form' : MantenimientoUnidadForm(instance=info_unidad), 'info_unidad' : info_unidad}
+        context = {'title':'Gestión de unidades', 'form' : MantenimientoUnidadForm(instance=info_unidad), 'info' : info_unidad}
         
     elif request.method == 'POST':
         #obtener los datos del formulario
@@ -249,10 +250,48 @@ def mantenimiento_unidades(request, id):
         info_unidad.disponibilidad = bool(form['disponibilidad'])
         info_unidad.save()
 
-    return render(request, 'unit_management.html',context)
+    return render(request, 'admin_form.html',context)
+
+def admin_servicio(request, id=''):
+    context = {'view_list':False}
+    if id == '':
+        info_servicio = Servicio.objects.all().order_by("pk")
+        context["data"] = info_servicio
+        context['view_list'] = True
+        return render(request, 'admin_form.html',context) 
+
+    info_servicio = Servicio.objects.get(pk=int(id))
+
+    if request.method == 'GET':
+        context = {'title':'Gestión de servicio', 'form' : AdministrarServicioForm(instance=info_servicio), 'info' : info_servicio}
+        
+    elif request.method == 'POST':
+        #obtener los datos del formulario
+        form = AdministrarServicioForm(request.POST) #Carga los campos con los Tag de la pagina HTML
+        context['form'] = form
+        if form.is_valid():
+            form=form.clean()
+        
+        #Actualizar la unidad
+        info_servicio.atencion = form['atencion']
+        info_servicio.fecha_partida = form['fecha_partida']
+        info_servicio.fecha_llegada = form['fecha_llegada']
+        info_servicio.disponibilidad = form['disponibilidad']
+        info_servicio.diferencial_precio = form['diferencial_precio']
+        info_servicio.creador = form['creador']
+        info_servicio.id_itinerario = form['id_itinerario']
+        info_servicio.id_unidad = form['id_unidad']
+        info_servicio.save()
+
+    return render(request, 'admin_form.html',context)
 
 def ver_estadisticas(request):
     context = {}
+    reservas = Reserva.objects.all()
 
+    #Dar datos para la página
+    context['data'] = reservas.order_by('-fecha_creacion')
+    context['data_itinerario'] = reservas.values('id_itinerario').annotate(cantidad=Count('id_itinerario')).order_by()
+    context['data_time'] = reservas.values("fecha_creacion__date").annotate(cantidad=Count('fecha_creacion__date'),antidad_pendiente=Count('estado')).order_by('-fecha_creacion__date')
 
     return render(request, 'statistics_reservations.html', context)

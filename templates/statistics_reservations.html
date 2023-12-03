@@ -7,6 +7,48 @@
 {% block content %}
 
 <h1>Pasajes vendidos</h1>
+<table>
+    <tr>
+        <th>fecha_creacion</th>
+        <th>Id_reserva</th>
+        <th>cliente</th>
+        <th>estado</th>
+    </tr>
+    {% for d in data %}
+    <tr>
+        <td>{{d.fecha_creacion}}</td>
+        <td>{{d.id_reserva}}</td>
+        <td>{{d.id_cliente.nombre}} {{d.id_cliente.apellido}}</td>
+        <td>{{d.estado}}</td>
+    </tr>
+    {% endfor %}
+    <br>
+<h1>Pasajes vendidos por Itinerario</h1>
+    <tr>
+        <th>id_itinerario</th>
+        <th>cantidad de ventas</th>
+    </tr>
+    {% for d in data_itinerario %}
+    <tr>
+        <td>{{d.id_itinerario}}</td>
+        <td>{{d.cantidad}}</td>
+    </tr>
+    {% endfor %}
+    <br>
+    <tr>
+        <th>fecha_creacion</th>
+        <th>cantidad reservada</th>
+        <th>Pendientes</th>
+    </tr>
+    {% for d in data_time %}
+    <tr>
+        <td>{{d.fecha_creacion__date}}</td>
+        <td>{{d.cantidad}}</td>
+        <td>{{d.cantidad_pendiente}}</td>
+    </tr>
+    {% endfor %}
+
+</table>
 <p>Por intinerario</p> <br>
 
 {% endblock  %}
