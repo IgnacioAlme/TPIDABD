@@ -112,7 +112,7 @@ class Reserva(models.Model):
     id_itinerario=models.ForeignKey(Itinerario, on_delete=models.CASCADE, db_column='id_itinerario', to_field='id_itinerario')
     parada_origen = models.BigIntegerField()
     parada_destino = models.BigIntegerField()
-    fecha_creación = models.DateTimeField(auto_now_add=True, editable=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, editable=False)
     fecha_pago = models.DateTimeField()
     descuento = models.FloatField()
     estado = models.CharField(max_length=30, choices=Estado.choices, default=Estado.PENDIENTE)

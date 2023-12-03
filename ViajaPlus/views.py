@@ -32,6 +32,27 @@ def acondicionar_localidad(texto:str):
         resultado += p[0].upper()+p[1:len(p)]
     return resultado
 
+#Funcion para calcular costo
+def get_costo(costo_base:float, diferencial_precio:float, categoria_transporte:str, atencion_servicio:str, descuento:float, delta_time:float):
+    #Valores que aumentan el precio
+    multiplicador = 1
+    match categoria_transporte:
+        case 'comun':
+            multiplicador += 0
+        case 'semicama':
+            multiplicador += 0.25
+        case 'cochecama':
+            multiplicador += 0.5
+    match atencion_servicio:
+        case 'comun':
+            multiplicador += 0
+        case 'ejecutivo':
+            multiplicador += 0.5
+    #aplicar el descuento al multiplicador (de 0 a 1)
+    multiplicador *= (1 - descuento)
+    #devolver el costo de la ecuación
+    return diferencial_precio*multiplicador*delta_time + costo_base
+
 #Buscador de servicos
 def buscar_info(request, operation, info = ""):
     context = {}
@@ -71,7 +92,9 @@ def buscar_info(request, operation, info = ""):
 #Operación de reserva de pasajes
 #@login_required(login_url='login')
 def reserva_pasajes(request, id, tramo):
-    context = {}
+    context = {'is_error':False}
+
+    #Cargar el servicio y los tramos de paradas
     servicio = Servicio.objects.get(pk=int(id))
     if tramo == "all":
         paradas = Parada.objects.filter(id_itinerario = servicio.id_itinerario).order_by('pk')
@@ -85,6 +108,42 @@ def reserva_pasajes(request, id, tramo):
         #Cargar las paradas
         parada_1 = paradas.get(nro_parada=tramo[0])
         parada_2 = paradas.get(nro_parada=tramo[1])
+
+    #Llamar la funcion del postgresql para obtener un asiento disponible
+    # id_asiento_disponible = invocar_funcion_postgresql(
+    #     'get_asientos_disponibles_funciona_de_verdad',
+    #     id,
+    #     parada_1.nro_parada,
+    #     parada_2.nro_parada
+    # )[0][0]
+
+    #Y sus tiempos
+    t_origen = parada_1.tiempo_llegada
+    t_destino = parada_2.tiempo_llegada
+    #Obtener las reservas que se hayan hecho en este servicio
+    reservas_existentes = Reserva.objects.filter(id_servicio=servicio)
+    asientos_reservados = AsientoReservado.objects.filter(id_reserva__in = reservas_existentes)
+    sin_reservacion = Disposicion.objects.filter(id_unidad = servicio.id_unidad).exclude(id_disposicion__in = asientos_reservados)
+    #Y las disposiciones de la unidad que emplee el servicio
+    asientos_disponibles = None
+    #Si no existen reservas asignar cualquier asiento
+    print(sin_reservacion)
+    if not sin_reservacion:
+        asientos_disponibles = sin_reservacion.first()
+    else:
+        #si hay reservas, verificar que los tiempos de ocupación no se superpongan con el tramo
+        for r in asientos_reservados:
+            r = r.id_reserva
+            _parada_destino = Parada.objects.get(pk = r.parada_destino, id_itinerario=servicio.id_itinerario) 
+            _parada_origen = Parada.objects.get(pk = r.parada_origen, id_itinerario=servicio.id_itinerario) 
+            if (_parada_destino.tiempo_llegada <= t_origen) or (_parada_origen.tiempo_llegada >= t_destino):
+                asientos_disponibles = AsientoReservado.objects.get(id_reserva = r).id_disposicion
+                break
+    #Si no hay asientos disponibles alzar error
+    if not asientos_disponibles:
+        messages.add_message(request, messages.ERROR, 'Este servicio no cuenta con asientos disponibles para el tramo escogido')
+        context['is_error'] = True
+        return render(request, 'make_reservation.html', context)
     #Cargar las localidades que correspondan
     _first = parada_1.id_localidad
     _last = parada_2.id_localidad
@@ -95,8 +154,7 @@ def reserva_pasajes(request, id, tramo):
                 'place_to':f'{_last.nombre_terminal} de {_last.nombre}, {_last.provincia}',
                 'date_to':servicio.fecha_llegada + parada_2.tiempo_llegada
     }
-    
-                
+
     if request.method == 'GET':
         context['form'] = HacerReservacion()
     if request.method == 'POST':
@@ -106,20 +164,41 @@ def reserva_pasajes(request, id, tramo):
             form=form.clean()
         # Obtener los datos del formulario
         email_usuario = form['email_usuario']
-        parada_origen = tramo[0]
-        parada_destino = tramo[1]
+        parada_origen = parada_1.nro_parada
+        parada_destino = parada_2.nro_parada
         
         #Invoca la funcion en el servidor SQL: Encargada de crear la reserva
-        factura = invocar_funcion_postgresql('hacer_reserva',
+        id_reserva = invocar_funcion_postgresql('hacer_reserva_devuelve',
                                    Perfil.objects.get(email=email_usuario).uid,
                                    id,
                                    parada_origen,
-                                   parada_destino)
+                                   parada_destino)[0][0]
+        id_reserva = Reserva.objects.get(pk=id_reserva)
+        #Crear el Asiento_reservado
+        asiento = AsientoReservado(
+            id_reserva = id_reserva,
+            id_disposicion = asientos_disponibles
+        )
+        asiento.save()
+        #Crea el pasaje
+        pasaje = Pasaje(
+            id_reserva = id_reserva,
+            costo = get_costo(
+                servicio.id_itinerario.costo_base,
+                servicio.diferencial_precio,
+                servicio.id_unidad.categoria,
+                servicio.atencion,
+                id_reserva.descuento,
+                (parada_2.tiempo_llegada - parada_1.tiempo_llegada).total_seconds()/3600
+                )
+            ) #TODO
+        pasaje.save()
+        
     return render(request, 'make_reservation.html', context)
 
 def buscador_servicio(request):
     context = {}
-
+    raise_error = False
     if request.method == 'GET':
         context = {'form' : BuscadorServicio()}
         
@@ -140,9 +219,9 @@ def buscador_servicio(request):
             localidad_destino = Localidad.objects.get(nombre=localidad_destino)
         except:
             messages.add_message(request, messages.ERROR, 'No se han encontrado servicios por esas localidades.')
-            return render(request, 'search_for_service.html',context)
-
-        return redirect('buscar_servicio', 'servicios', f'{localidad_origen.id_localidad}$&{localidad_destino.id_localidad}')
+            raise_error = True
+        if not raise_error:
+            return redirect('buscar_servicio', 'servicios', f'{localidad_origen.id_localidad}$&{localidad_destino.id_localidad}')
 
     return render(request, 'search_for_service.html',context)
 
@@ -172,3 +251,8 @@ def mantenimiento_unidades(request, id):
 
     return render(request, 'unit_management.html',context)
 
+def ver_estadisticas(request):
+    context = {}
+
+
+    return render(request, 'statistics_reservations.html', context)

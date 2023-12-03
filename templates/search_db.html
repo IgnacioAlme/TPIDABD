@@ -10,14 +10,14 @@
     {% if info_web.filtered %}
         {% for d, t in data %}
             <p> Servicio de viaje (id: {{d.pk}})
-                Fecha de salida : {{d.fecha_partida}}
+                Fecha de salida : {{d.fecha_partida|date:"d-m-Y"}}
                 <a href={% url 'hacer_reserva' d.pk t %}> Reservar ahora </a>
             </p>
         {% endfor %}
     {% else %}
         {% for d in data %}
             <p> Servicio de viaje (id: {{d.pk}})
-                Fecha de salida : {{d.fecha_partida}}
+                Fecha de salida : {{d.fecha_partida|date:"d-m-Y"}}
                 <a href={% url 'hacer_reserva' d.pk "all" %}> Reservar ahora </a>
             </p>
         {% endfor %}
