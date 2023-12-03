@@ -14,7 +14,7 @@ Opciones_Estado = (
 #Campos requeridos por el formulario html para realizar una reservación
 class HacerReservacion(forms.Form):
     email_usuario = forms.CharField(required=True)
-    descuento = forms.ChoiceField(widget=forms.RadioSelect, choices=((0.1, "10%"),(0.25,"25%"),(0.5,"50%")))
+    descuento = forms.ChoiceField(widget=forms.RadioSelect, choices=((0.0, "0%"),(0.1, "10%"),(0.25,"25%"),(0.5,"50%")), initial=(0.0, "0%"))
 
 #Campos para definir el estado de una unidad de transporte
 class MantenimientoUnidadForm(forms.ModelForm):

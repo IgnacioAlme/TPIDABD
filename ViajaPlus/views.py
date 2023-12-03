@@ -30,8 +30,8 @@ def acondicionar_localidad(texto:str):
     palabras = texto.split(" ")
     resultado = ''
     for p in palabras:
-        resultado += p[0].upper()+p[1:len(p)]
-    return resultado
+        resultado += p[0].upper()+p[1:len(p)]+" "
+    return resultado[0:-1]
 
 #Funcion para calcular costo
 def get_costo(costo_base:float, diferencial_precio:float, categoria_transporte:str, atencion_servicio:str, descuento:float, delta_time:float):
@@ -50,7 +50,7 @@ def get_costo(costo_base:float, diferencial_precio:float, categoria_transporte:s
         case 'ejecutivo':
             multiplicador += 0.5
     #aplicar el descuento al multiplicador (de 0 a 1)
-    multiplicador *= (1 - descuento)
+    multiplicador *= (1.0 - descuento)
     #devolver el costo de la ecuación
     return diferencial_precio*multiplicador*delta_time + costo_base
 
@@ -118,30 +118,8 @@ def reserva_pasajes(request, id, tramo):
         parada_2.nro_parada
     )[0][0]
 
-    #Y sus tiempos
-    t_origen = parada_1.tiempo_llegada
-    t_destino = parada_2.tiempo_llegada
-    #Obtener las reservas que se hayan hecho en este servicio
-    reservas_existentes = Reserva.objects.filter(id_servicio=servicio)
-    asientos_reservados = AsientoReservado.objects.filter(id_reserva__in = reservas_existentes)
-    sin_reservacion = Disposicion.objects.filter(id_unidad = servicio.id_unidad).exclude(id_disposicion__in = asientos_reservados)
-    #Y las disposiciones de la unidad que emplee el servicio
-    asientos_disponibles = None
-    #Si no existen reservas asignar cualquier asiento
-    print(sin_reservacion)
-    if not sin_reservacion:
-        asientos_disponibles = sin_reservacion.first()
-    else:
-        #si hay reservas, verificar que los tiempos de ocupación no se superpongan con el tramo
-        for r in asientos_reservados:
-            r = r.id_reserva
-            _parada_destino = Parada.objects.get(pk = r.parada_destino, id_itinerario=servicio.id_itinerario) 
-            _parada_origen = Parada.objects.get(pk = r.parada_origen, id_itinerario=servicio.id_itinerario) 
-            if (_parada_destino.tiempo_llegada <= t_origen) or (_parada_origen.tiempo_llegada >= t_destino):
-                asientos_disponibles = AsientoReservado.objects.get(id_reserva = r).id_disposicion
-                break
     #Si no hay asientos disponibles alzar error
-    if not asientos_disponibles:
+    if not id_asiento_disponible:
         messages.add_message(request, messages.ERROR, 'Este servicio no cuenta con asientos disponibles para el tramo escogido')
         context['is_error'] = True
         return render(request, 'make_reservation.html', context)
@@ -165,12 +143,19 @@ def reserva_pasajes(request, id, tramo):
             form=form.clean()
         # Obtener los datos del formulario
         email_usuario = form['email_usuario']
+        descuento_aplicar = form['descuento']
         parada_origen = parada_1.nro_parada
         parada_destino = parada_2.nro_parada
         
+        usuario = Perfil.objects.get(email=email_usuario)
+        if not usuario:
+            messages.add_message(request, messages.ERROR, 'No existe un cliente con ese email')
+            context['is_error'] = True
+            return render(request, 'make_reservation.html', context)
+
         #Invoca la funcion en el servidor SQL: Encargada de crear la reserva
         id_reserva = invocar_funcion_postgresql('hacer_reserva_devuelve',
-                                   Perfil.objects.get(email=email_usuario).uid,
+                                   usuario.uid,
                                    id,
                                    parada_origen,
                                    parada_destino)[0][0]
@@ -178,10 +163,14 @@ def reserva_pasajes(request, id, tramo):
         #Crear el Asiento_reservado
         asiento = AsientoReservado(
             id_reserva = id_reserva,
-            id_disposicion = asientos_disponibles
+            id_disposicion = Disposicion.objects.get(id_disposicion=id_asiento_disponible)
         )
         asiento.save()
         #Crea el pasaje
+        print(id_reserva.descuento)
+        id_reserva.descuento = descuento_aplicar
+        id_reserva.save()
+        print(id_reserva.descuento)
         pasaje = Pasaje(
             id_reserva = id_reserva,
             costo = get_costo(
@@ -189,10 +178,10 @@ def reserva_pasajes(request, id, tramo):
                 servicio.diferencial_precio,
                 servicio.id_unidad.categoria,
                 servicio.atencion,
-                id_reserva.descuento,
+                float(id_reserva.descuento),
                 (parada_2.tiempo_llegada - parada_1.tiempo_llegada).total_seconds()/3600
                 )
-            ) #TODO
+            )
         pasaje.save()
         
     return render(request, 'make_reservation.html', context)
