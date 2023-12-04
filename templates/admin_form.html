@@ -16,10 +16,10 @@
 	<form method="POST" novalidate>
 		{% csrf_token %}
 		<h2>{{title}}</h2>
-		{{ form.as_p }}		
+		{{ form.as_p }}
 		<input type="submit" value="Actualizar" />
 	</form>
 	<br>
-	<a href={% url 'home'%}> Volver</a> 
+	<a href={% url 'home'%}> Volver</a>
 {% endif %}
 {% endblock  %}
