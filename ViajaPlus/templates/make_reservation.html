@@ -1,22 +1,35 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block titulo %}- Hacer reservación{% endblock %}
+{% block title %}- Hacer Reservación{% endblock  %}
 
 {% block content %}
-    <div class="container">
-        <h2 class="main-title mb-4">Hacer Reservación para el Viaje</h2>
-        <p class="service-info"><strong>ID del Servicio:</strong> {{data.id}}</p>
-        <p class="service-info"><strong>Desde:</strong> {{data.desde}}</p>
-        <p class="service-info"><strong>Hasta:</strong> {{data.hasta}}</p>
-        <p class="service-info"><strong>Fecha de Salida:</strong> {{data.fecha_salida}}</p>
+  <div class="container">
+    {% for msg in messages %}
+      <div class="alert alert-info my-3" role="alert">
+        {{ msg }}
+      </div>
+    {% endfor %}
 
-        <form method="POST" novalidate>
+    {% if not is_error %}
+      <h2 class="display-4">Hacer Reservación para el Viaje</h2>
+      <div class="card my-4 custom-card">
+        <div class="card-body">
+          <p class="card-text">ID del Servicio: {{ data }}</p>
+          <p class="card-text">Desde: {{ place_from }}</p>
+          <p class="card-text">Fecha de Partida: {{ date_from|date:"d-m-Y H:i" }}</p>
+          <p class="card-text">Hasta: {{ place_to }}</p>
+          <p class="card-text">Fecha de Llegada: {{ date_to|date:"d-m-Y H:i" }}</p>
+
+          <form method="POST" novalidate class="custom-form">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-primary mt-3">Reservar</button>
-        </form>
+            <button type="submit" class="btn btn-primary">Reservar</button>
+          </form>
 
-        <a href="{% url 'home' %}" class="btn btn-primary mt-3">Volver a la Página Principal</a>
-    </div>
+          <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Volver a la Página Principal</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}

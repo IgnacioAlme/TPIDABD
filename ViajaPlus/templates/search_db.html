@@ -1,32 +1,35 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block titulo %}- Buscador{% endblock %}
+{% block titulo %}- Buscador{% endblock  %}
+
 
 {% block content %}
-<div class="container">
-    <h1 class="main-title">{{info_web.titulo}}</h1>
-
-    {% if info_web.es_servicio %}
+<h1>{{info_web.titulo}}</h1>
+{%if info_web.es_servicio%}
+    {% if info_web.filtered %}
         {% for d, t in data %}
-            <div class="service-item">
-                <p class="service-info">
-                    Servicio de viaje (ID: {{d.pk}})<br>
-                    Fecha de salida: {{d.fecha_partida|date:"d-m-Y"}}<br>
-                    <a href="{% url 'hacer_reserva' d.pk t %}" class="btn btn-primary">Reservar ahora</a>
-                </p>
-            </div>
+            <p> Servicio de viaje (id: {{d.pk}})
+                Fecha de salida : {{d.fecha_partida|date:"d-m-Y"}}
+                <a href={% url 'hacer_reserva' d.pk t %}> Reservar ahora </a>
+            </p>
         {% endfor %}
     {% else %}
         {% for d in data %}
-            <div class="vehicle-item">
-                <p class="vehicle-info">
-                    Vehículo (ID: {{d.pk}})<br>
-                    Patente: {{d.patente}} - {% if d.disponibilidad %}EN SERVICIO{% else %}EN MANTENIMIENTO{% endif %}<br>
-                    <a href="{% url 'mantenimiento_unidades' d.pk %}" class="btn btn-primary">Administrar unidad</a>
-                </p>
-            </div>
+            <p> Servicio de viaje (id: {{d.pk}})
+                Fecha de salida : {{d.fecha_partida|date:"d-m-Y"}}
+                <a href={% url 'hacer_reserva' d.pk "all" %}> Reservar ahora </a>
+            </p>
         {% endfor %}
     {% endif %}
-</div>
-{% endblock %}
+{% else %}
+    {% for d in data %}
+        <p> Vehículo (id: {{d.pk}})
+            Patente : {{d.patente}} - {% if d.disponibilidad %} EN SERVICIO {% else %} EN MANTENIMIENTO{% endif %}
+            <a href={% url 'mantenimiento_unidades' d.pk %}> Administrar unidad </a>
+        </p>
+    {% endfor %}
+{% endif %}
+    
+    
+{% endblock  %}
