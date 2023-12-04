@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}- Página principal{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Bienvenido a ViajaPlus</h1>
+            <p>Descubre nuestros servicios y unidades</p>
+            <a href={% url 'buscar_servicio' 'servicios' %} class="btn btn-primary">Ver todos los servicios</a>
+            <a href={% url 'buscador_servicio' %} class="btn btn-primary"> Buscar un servicio</a> <br>
+            <a href={% url 'buscar_servicio' 'unidades' %} class="btn btn-primary">Ver todas las unidades</a>
+            <a href={% url 'administrar_servicio' %} class="btn btn-primary"> Administrar servicios</a> <br>
+        </div>
+    </section>
+
+    <section class="featured-services">
+        <h2>Servicios Destacados</h2>
+        <!-- Aquí puedes mostrar algunos servicios destacados -->
+        <!-- Puedes usar un bucle para mostrar varios servicios -->
+    </section>
+
+    <section class="featured-vehicles">
+        <h2>Unidades Destacadas</h2>
+        <!-- Aquí puedes mostrar algunas unidades destacadas -->
+        <!-- Puedes usar un bucle para mostrar varias unidades -->
+    </section>
+{% endblock %}

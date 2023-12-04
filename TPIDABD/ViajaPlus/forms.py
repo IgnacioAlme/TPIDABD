@@ -1,5 +1,5 @@
 from django import forms
-from .models import UnidadTransporte
+from .models import *
 
 Opciones_Atencion = (
     ("Común", "Común"),
@@ -29,3 +29,14 @@ class BuscarServicio(forms.Form):
     id_servicio = forms.IntegerField(required=False)
     parada_origen = forms.IntegerField(required=False)
     parada_destino = forms.IntegerField(required=False)
+
+#Campos para definir el servicio
+class AdministrarServicioForm(forms.ModelForm):
+    class Meta:
+        model = Servicio
+        fields = ("atencion","fecha_partida","fecha_llegada","disponibilidad","diferencial_precio","creador","id_itinerario","id_unidad")
+
+#Para busqueda de servicios
+class BuscadorServicio(forms.Form):
+    localidad_origen = forms.CharField(max_length=38, required=True)
+    localidad_destino = forms.CharField(max_length=38, required=True)

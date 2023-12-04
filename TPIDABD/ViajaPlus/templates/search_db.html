@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}- Buscador{% endblock  %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="main-title">{{info_web.titulo}}</h1>
+
+        {% if info_web.es_servicio %}
+            <div class="service-list">
+                {% for service in data %}
+                    <div class="service-item">
+                        <p>
+                            <strong>Servicio de viaje (ID: {{service.pk}})</strong><br>
+                            <strong>Fecha de salida:</strong> {{service.fecha_partida}}<br>
+                            <a href="{% url 'hacer_reserva' service.pk 'asdasd' %}" class="btn btn-primary">Reservar ahora</a>
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="vehicle-list">
+                {% for vehicle in data %}
+                    <div class="vehicle-item">
+                        <p>
+                            <strong>Vehículo (ID: {{vehicle.pk}})</strong><br>
+                            <strong>Patente:</strong> {{vehicle.patente}} - {% if vehicle.disponibilidad %}
+                                <span class="availability" style="color: green;">EN SERVICIO</span>
+                            {% else %}
+                                <span class="availability" style="color: red;">EN MANTENIMIENTO</span>
+                            {% endif %}<br>
+                            <a href="{% url 'mantenimiento_unidades' vehicle.pk %}" class="btn btn-primary">Administrar unidad</a>
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

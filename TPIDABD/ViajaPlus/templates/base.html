@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViajaPlus - {% block titulo %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <script src="https://kit.fontawesome.com/aea516026a.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="{% url 'home' %}">
+                    <img src="{% static 'logo.png' %}" alt="Logo de ViajaPlus">
+                </a>
+            </div>
+            <div class="menu">
+                <ul>
+                    <li><a href="#" class="nav-link">Inicio</a></li>
+                    <li><a href="#" class="nav-link">Servicios</a></li>
+                    <li><a href="#" class="nav-link">Contacto</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+</body>
+
+
+    <main>
+        <div class="hero">
+            <h1>{{info_web.titulo}}</h1>
+        </div>
+        <div class="container">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="social-icons">
+                <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                <!-- Agrega más íconos según sea necesario -->
+            </div>
+            <p>&copy; 2023 ViajaPlus. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}- {{title}}{% endblock  %}
+
+{% block content %}
+
+{% if view_list %}
+	{% for d in data %}
+		<p> Servicio (id: {{d.pk}})
+			Fecha de salida : {{d.fecha_partida|date:"d-m-Y"}} - {{ d.id_unidad }}
+			<a href={% url 'administrar_servicio' d.pk %}> Administrar servicio </a>
+		</p>
+	{% endfor %}
+{% else %}
+	<form method="POST" novalidate>
+		{% csrf_token %}
+		<h2>{{title}}</h2>
+		{{ form.as_p }}
+		<input type="submit" value="Actualizar" />
+	</form>
+	<br>
+	<a href={% url 'home'%}> Volver</a>
+{% endif %}
+{% endblock  %}
