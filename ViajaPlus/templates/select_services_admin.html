@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}- Administrar{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="main-title">Administrar: {{info_web.titulo}}</h1>
+
+    {% if info_web.es_servicio %}
+        {% for d, t in data %}
+            <div class="service-item">
+                <p class="service-info">
+                    Servicio de viaje (ID: {{d.pk}})<br>
+                    Fecha de salida: {{d.fecha_partida|date:"d-m-Y"}}<br>
+                    <a href="{% url 'hacer_reserva' d.pk t %}" class="btn btn-primary">Reservar ahora</a>
+                </p>
+            </div>
+        {% endfor %}
+    {% else %}
+        {% for d in data %}
+            <div class="vehicle-item">
+                <p class="vehicle-info">
+                    Vehículo (ID: {{d.pk}})<br>
+                    Patente: {{d.patente}} - {% if d.disponibilidad %}EN SERVICIO{% else %}EN MANTENIMIENTO{% endif %}<br>
+                    <a href="{% url 'mantenimiento_unidades' d.pk %}" class="btn btn-primary">Administrar unidad</a>
+                </p>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

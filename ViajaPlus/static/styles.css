@@ -1,0 +1,192 @@
+body, h1, h2, h3, p, ul {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    background-color: #1a1a1a; /* Fondo más oscuro */
+    color: #ccc; /* Color de texto más claro */
+}
+
+/* Header */
+header {
+    background-color: #000;
+    padding: 10px;
+}
+
+/* Logo */
+header .logo {
+    flex: 1;
+}
+
+header .logo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+header .logo img:hover {
+    transform: scale(1.5);
+}
+
+/* Navbar */
+nav.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #000;
+    padding: 10px;
+}
+
+nav.navbar .logo {
+    flex: 1;
+}
+
+nav.navbar .logo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+nav.navbar .logo img:hover {
+    transform: scale(1.5);
+}
+
+nav.navbar .menu ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+nav.navbar .menu li {
+    margin: 0 20px;
+}
+
+nav.navbar .menu a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+nav.navbar .menu a:hover {
+    color: #ffcc00;
+}
+
+.menu ul {
+    list-style: none;
+    display: flex;
+    justify-content: center; /* Centro horizontal */
+    align-items: center;
+}
+
+.menu li {
+    margin: 0 20px;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+.menu a:hover {
+    color: #ffcc00;
+}
+
+/* Main Content */
+.hero {
+    background-image: url("{% static 'background-image.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    text-align: center;
+    padding: 100px 0;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #ccc;
+}
+
+.hero p {
+    font-size: 1.2em;
+    color: #999; /* Color de texto más claro para el contenido del héroe */
+}
+
+/* Estilos de los botones */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    text-decoration: none;
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #4B0082;
+}
+
+.btn-secondary {
+    background-color: #2196F3;
+}
+
+.btn:hover {
+    background-color: #666;
+}
+
+/* Otros estilos */
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #333; /* Fondo más oscuro para los contenedores */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Footer */
+footer {
+    background-color: #111;
+    color: #ccc;
+    padding: 20px 0;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: center; /* Centra los elementos horizontalmente */
+    align-items: center;
+    flex-direction: column; /* Coloca los elementos en columna para mejor alineación */
+}
+
+/* Cambia los estilos de los íconos de redes sociales */
+.social-icons i {
+    font-size: 30px;
+    margin: 0 10px; /* Espaciado más uniforme */
+    color: #fff;
+    transition: color 0.3s ease;
+}
+
+/* Ajusta el color al pasar el ratón sobre los íconos */
+.social-icons i:hover {
+    color: #ffcc00;
+}

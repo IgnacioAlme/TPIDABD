@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}- Hacer reservación{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2 class="main-title mb-4">Hacer Reservación para el Viaje</h2>
+        <p class="service-info"><strong>ID del Servicio:</strong> {{data.id}}</p>
+        <p class="service-info"><strong>Desde:</strong> {{data.desde}}</p>
+        <p class="service-info"><strong>Hasta:</strong> {{data.hasta}}</p>
+        <p class="service-info"><strong>Fecha de Salida:</strong> {{data.fecha_salida}}</p>
+
+        <form method="POST" novalidate>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary mt-3">Reservar</button>
+        </form>
+
+        <a href="{% url 'home' %}" class="btn btn-primary mt-3">Volver a la Página Principal</a>
+    </div>
+{% endblock %}
