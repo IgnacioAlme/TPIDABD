@@ -167,10 +167,8 @@ def reserva_pasajes(request, id, tramo):
         )
         asiento.save()
         #Crea el pasaje
-        print(id_reserva.descuento)
         id_reserva.descuento = descuento_aplicar
         id_reserva.save()
-        print(id_reserva.descuento)
         pasaje = Pasaje(
             id_reserva = id_reserva,
             costo = get_costo(
